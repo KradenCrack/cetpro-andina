@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CETPRO Andina - Sistema de Certificados</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">🎓</span>
+        <div>
+            <h1>CETPRO "ANDINA"</h1>
+            <small>Sistema de Gestión de Certificados</small>
+        </div>
+    </div>
+    <nav class="tabs">
+        <button class="tab active" data-view="dashboard">Dashboard</button>
+        <button class="tab" data-view="alumnos">Alumnos</button>
+        <button class="tab" data-view="emitir">Emitir Certificado</button>
+        <button class="tab" data-view="certificados">Certificados</button>
+    </nav>
+</header>
+
+<main id="app">
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+        <div class="cards">
+            <div class="card"><span class="num" id="stat-alumnos">0</span><span>Alumnos</span></div>
+            <div class="card"><span class="num" id="stat-certs">0</span><span>Certificados emitidos</span></div>
+            <div class="card"><span class="num" id="stat-impresos">0</span><span>Impresos</span></div>
+            <div class="card"><span class="num" id="stat-entregados">0</span><span>Entregados</span></div>
+            <div class="card warn"><span class="num" id="stat-pendientes">0</span><span>Pendientes entrega</span></div>
+        </div>
+        <h2>Últimos certificados</h2>
+        <div id="tabla-ultimos"></div>
+    </section>
+
+    <!-- ALUMNOS -->
+    <section id="view-alumnos" class="view">
+        <div class="toolbar">
+            <input id="buscar-alumno" type="search" placeholder="Buscar por DNI, nombres o apellidos...">
+            <button id="btn-nuevo-alumno" class="primary">+ Nuevo alumno</button>
+        </div>
+        <div id="tabla-alumnos"></div>
+    </section>
+
+    <!-- EMITIR -->
+    <section id="view-emitir" class="view">
+        <h2>Emitir Certificado</h2>
+        <div class="selector-tipo">
+            <label><input type="radio" name="tipo-cert" value="MODULAR" checked> Modular <small>(con tabla de unidades didácticas)</small></label>
+            <label><input type="radio" name="tipo-cert" value="CAPACITACION"> Capacitación <small>(nota única)</small></label>
+        </div>
+
+        <form id="form-cert" class="form-grid">
+            <div class="col-2">
+                <label>Alumno *
+                    <div class="autocomplete">
+                        <input id="input-alumno" type="text" placeholder="Escriba DNI o apellido..." autocomplete="off" required>
+                        <input type="hidden" id="idAlumno" name="idAlumno">
+                        <div class="suggestions" id="sug-alumno"></div>
+                    </div>
+                </label>
+            </div>
+            <label>Módulo *
+                <select id="idModulo" name="idModulo" required></select>
+            </label>
+            <label>Ciclo formativo
+                <input type="text" id="cicloFormativo" placeholder="2024-I">
+            </label>
+            <label>Fecha inicio curso
+                <input type="date" id="fechaInicioCurso">
+            </label>
+            <label>Fecha fin curso
+                <input type="date" id="fechaFinCurso">
+            </label>
+            <label>Fecha emisión *
+                <input type="date" id="fechaEmision" required>
+            </label>
+            <label>Lugar emisión
+                <input type="text" id="lugarEmision" value="Ica">
+            </label>
+
+            <!-- Campos CAPACITACION -->
+            <div id="campos-capacitacion" class="campos-tipo" style="display:none;">
+                <label>Nota final (0-20) *
+                    <input type="number" id="notaFinal" min="0" max="20">
+                </label>
+                <label>Duración (horas) *
+                    <input type="number" id="duracionHoras" min="1">
+                </label>
+            </div>
+
+            <!-- Campos MODULAR (tabla unidades) -->
+            <div id="campos-modular" class="campos-tipo col-2">
+                <h3>Calificaciones por Unidad Didáctica</h3>
+                <p class="hint">Seleccione un módulo para cargar sus unidades didácticas.</p>
+                <table class="tabla-unidades" id="tabla-unidades">
+                    <thead>
+                    <tr>
+                        <th>Unidad didáctica</th>
+                        <th>Créditos</th>
+                        <th>Horas</th>
+                        <th>Calificación (0-20)</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3"><b>Promedio ponderado</b></td>
+                        <td id="promedio-preview">-</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <label class="col-2">Observaciones
+                <textarea id="observaciones" rows="2"></textarea>
+            </label>
+
+            <div class="col-2 actions">
+                <button type="submit" class="primary">Emitir certificado</button>
+                <button type="reset">Limpiar</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- LISTA CERTIFICADOS -->
+    <section id="view-certificados" class="view">
+        <div class="toolbar">
+            <select id="filtro-tipo">
+                <option value="">Todos los tipos</option>
+                <option value="MODULAR">Modular</option>
+                <option value="CAPACITACION">Capacitación</option>
+            </select>
+            <input type="number" id="filtro-anio" placeholder="Año" min="2020" max="2099">
+            <select id="filtro-entregado">
+                <option value="">Todos</option>
+                <option value="false">Pendientes de entrega</option>
+                <option value="true">Ya entregados</option>
+            </select>
+            <button id="btn-filtrar" class="primary">Filtrar</button>
+        </div>
+        <div id="tabla-certificados"></div>
+    </section>
+
+</main>
+
+<!-- Modal alumno -->
+<div id="modal-alumno" class="modal">
+    <div class="modal-content">
+        <h3>Nuevo Alumno</h3>
+        <form id="form-alumno" class="form-grid">
+            <label>DNI / C.E. *<input type="text" id="a-dni" required maxlength="15"></label>
+            <label>Tipo doc.
+                <select id="a-tipo"><option>DNI</option><option>CE</option><option>PASAPORTE</option></select>
+            </label>
+            <label>Nombres *<input type="text" id="a-nombres" required></label>
+            <label>Apellido paterno *<input type="text" id="a-ap" required></label>
+            <label>Apellido materno<input type="text" id="a-am"></label>
+            <label>Fecha nacimiento<input type="date" id="a-fn"></label>
+            <label>Género
+                <select id="a-gen"><option value="">-</option><option value="F">Femenino</option><option value="M">Masculino</option></select>
+            </label>
+            <label>Teléfono<input type="text" id="a-tel"></label>
+            <label>Email<input type="email" id="a-email"></label>
+            <label class="col-2">Dirección<input type="text" id="a-dir"></label>
+            <div class="col-2 actions">
+                <button type="submit" class="primary">Guardar</button>
+                <button type="button" id="cerrar-modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
