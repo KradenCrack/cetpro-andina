@@ -1,8 +1,5 @@
 // Cliente HTTP. Cambiar BASE si frontend y backend están separados.
-const API_BASE = (location.port === '' || location.port === '80')
-    ? '/cetpro-andina/api'
-    : 'http://localhost:8080/cetpro-andina/api';
-
+const API_BASE = 'https://cetpro-andina.onrender.com/api';
 const Api = {
     async req(method, path, body) {
         const opts = { method, headers: { 'Content-Type': 'application/json' } };
