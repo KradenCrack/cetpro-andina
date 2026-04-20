@@ -1,5 +1,6 @@
 // Cliente HTTP. Cambiar BASE si frontend y backend están separados.
-const API_BASE = 'https://cetpro-andina.onrender.com/cetpro-andina/api';
+// Prueba con esta ruta limpia
+const API_BASE = 'https://cetpro-andina.onrender.com/api';
 const Api = {
     async req(method, path, body) {
         const opts = { method, headers: { 'Content-Type': 'application/json' } };
