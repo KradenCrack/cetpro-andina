@@ -1,7 +1,7 @@
 FROM tomcat:10-jdk17-openjdk-slim
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Al quitar "cetpro-andina/", Render buscará el archivo .war donde ya está parado
+# Importante: El archivo .war se convierte en ROOT.war
 COPY *.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
